@@ -14,7 +14,6 @@
 # Grid format:
 #   0 = Navigable space
 #   1 = Occupied space
-import numpy as np
 
 grid = [[0, 0, 1, 0, 0, 0],
         [0, 0, 1, 0, 0, 0],
@@ -37,31 +36,34 @@ def search(grid,init,goal,cost):
     # insert code here
     # ----------------------------------------
     visit_list = []
-    visit_list.append(init)
-    length = len(grid)
-    width = len(grid[0])
-    find = False
+    init_grid = init + [1]
+    visit_list.append(init_grid)
     grid[init[0]][init[1]]=cost
     
-    while (visit_list != []):
-        status = visit_list.pop()
+    Find = False
+    
+    while(visit_list != []):
+        
+        visit_list = sorted(visit_list,key = lambda student:student[2],reverse = True)
+        c_s = visit_list.pop()
+        if c_s[0]==goal[0] and c_s[1]==goal[1]:
+            Find = True
+            path = [c_s[2]-1,c_s[0],c_s[1]]
+            break
         
         for move in delta:
-            new_status = np.subtract(status,move)
-            i = new_status[0]
-            j = new_status[1]
-            
-            if np.array_equal(new_status,goal):
-                find = True
-                path = [grid[status[0]][status[1]],status[0],status[1]]
-                break
-            if (i in range(0,length))and (j in range(0,width)) and grid[i][j]==0:
-                visit_list.append(new_status)
-                grid[i][j]=grid[status[0]][status[1]]+cost
-                
-    if find == False:
+            i = c_s[0]-move[0]
+            j = c_s[1]-move[1]
+            if (i in range(0,len(grid))) and (j in range(0,len(grid[0]))):
+                if grid[i][j] == 0:
+                    n_s = [i,j]
+                    grid[i][j] = grid[c_s[0]][c_s[1]]+cost
+                    visit_list.append([i,j,grid[i][j]])
+    
+    if Find == False:
         return 'fail'
-    print grid
+
+    
     return path
 
 print search(grid,init,goal,cost)
